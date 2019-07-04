@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>vue php file upload</title>
+	<style type="text/css">
+		#app{
+			width: 555px;
+			margin: auto;
+			padding: 33px;
+			background: #e3e3e3;
+		}
+	</style>
+	<script type="text/javascript" src="vue.js"></script>
+	<script type="text/javascript" src="axios.js"></script>
+</head>
+<body>
+		<div id="app">
+			<h1>Normal file upload</h1>
+			<form action="upload.php" method="post" enctype="multipart/form-data">
+				<label>Slelect File</label>
+				<input type="file" name="fileToUpload" id="fileToUpload"><br><br>
+				<button type="submit">Upload</button>
+			</form>
+
+			<br><br><br>
+			<h1>File upload with progressbar </h1>
+
+			<label>Slelect File</label>sss
+				<input type="file" name="fileToUpload1" id="fileToUpload1"><br><br>
+				<progress :value="percent" max="100"></progress> {{ percent }} % <br><br> 
+				{{ message }}<br><br>
+				<button @click="upload();">Upload</button>
+		
+		</div>
+		
+
+		
+<script type="text/javascript">
+	var app = new Vue({
+		el: "#app",
+		data: {
+			percent: 0,
+			message: "",
+		},
+		mounted: function(){
+			console.log("mounted");
+		},
+
+		methods: {
+			upload: function(){
+				var _this = this;
+				var element = document.getElementById("fileToUpload1");
+
+				var fd = new FormData();
+				fd.append("fileToUpload", element.files[0], element.files[0].name);
+
+				axios.post("http://127.0.0.1/vuephpfileupload/upload.php", fd, {
+
+					onUploadProgress: function(uploadEvent){
+						console.log(Math.round((uploadEvent.loaded/uploadEvent.total)*100));
+
+						_this.percent = Math.round((uploadEvent.loaded/uploadEvent.total)*100);
+					}
+				})
+				.then(function(res){
+					console.log(res.data.message);
+					_this.message = res.data.message;
+				})
+				.catch(function(e){
+					console.log(e);
+				});
+				;
+			}
+		}
+	});
+
+</script>
+
+</body>
+</html>
